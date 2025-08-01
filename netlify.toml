@@ -1,32 +1,4 @@
-[build]
-  # Build command for React Router v7
-  command = "bun run build"
-
-  # Publish directory - React Router v7 outputs client files here
-  publish = "build/client"
-
-[build.environment]
-  # Use the latest Node.js version
-  NODE_VERSION = "18"
-
-# Redirect rules for React Router SPA
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-# Headers for better performance
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+from = "/*"
+to = "/index.html"
+status = 200
