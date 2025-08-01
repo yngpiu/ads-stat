@@ -18,7 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table';
-import { Search, Filter, ArrowUpDown, Download } from 'lucide-react';
+import {
+  Search,
+  Filter,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Download,
+} from 'lucide-react';
 import type { AdData, ParsedAdData } from '~/lib/csv-parser';
 
 interface DataTableProps {
@@ -110,6 +117,24 @@ export function DataTable({ data }: DataTableProps) {
       setSortField(field);
       setSortDirection('asc');
     }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="ml-2 h-4 w-4" />;
+    }
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowDown className="ml-2 h-4 w-4" />
+    );
+  };
+
+  const getSortButtonClass = (field: SortField) => {
+    const baseClass = 'h-8 p-0';
+    return sortField === field
+      ? `${baseClass} text-primary font-medium`
+      : baseClass;
   };
 
   const formatNumber = (num: number) => {
@@ -243,20 +268,19 @@ export function DataTable({ data }: DataTableProps) {
                   <Button
                     variant="ghost"
                     onClick={() => handleSort('order')}
-                    className="h-8 p-0"
+                    className={getSortButtonClass('order')}
                   >
-                    #
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    #{getSortIcon('order')}
                   </Button>
                 </TableHead>
                 <TableHead className="min-w-48">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort('keyword')}
-                    className="h-8 p-0"
+                    className={getSortButtonClass('keyword')}
                   >
                     Keyword
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    {getSortIcon('keyword')}
                   </Button>
                 </TableHead>
                 <TableHead>Type</TableHead>
@@ -265,70 +289,70 @@ export function DataTable({ data }: DataTableProps) {
                   <Button
                     variant="ghost"
                     onClick={() => handleSort('views')}
-                    className="h-8 p-0"
+                    className={getSortButtonClass('views')}
                   >
                     Views
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    {getSortIcon('views')}
                   </Button>
                 </TableHead>
                 <TableHead className="text-right">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort('clicks')}
-                    className="h-8 p-0"
+                    className={getSortButtonClass('clicks')}
                   >
                     Clicks
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    {getSortIcon('clicks')}
                   </Button>
                 </TableHead>
                 <TableHead className="text-right">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort('clickRate')}
-                    className="h-8 p-0"
+                    className={getSortButtonClass('clickRate')}
                   >
                     Click Rate
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    {getSortIcon('clickRate')}
                   </Button>
                 </TableHead>
                 <TableHead className="text-right">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort('conversions')}
-                    className="h-8 p-0"
+                    className={getSortButtonClass('conversions')}
                   >
                     Conv.
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    {getSortIcon('conversions')}
                   </Button>
                 </TableHead>
                 <TableHead className="text-right">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort('cost')}
-                    className="h-8 p-0"
+                    className={getSortButtonClass('cost')}
                   >
                     Cost
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    {getSortIcon('cost')}
                   </Button>
                 </TableHead>
                 <TableHead className="text-right">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort('gmv')}
-                    className="h-8 p-0"
+                    className={getSortButtonClass('gmv')}
                   >
                     GMV
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    {getSortIcon('gmv')}
                   </Button>
                 </TableHead>
                 <TableHead className="text-right">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort('averageRank')}
-                    className="h-8 p-0"
+                    className={getSortButtonClass('averageRank')}
                   >
                     Rank
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                    {getSortIcon('averageRank')}
                   </Button>
                 </TableHead>
               </TableRow>
