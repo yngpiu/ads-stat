@@ -38,16 +38,20 @@ export function DataTable({ data }: DataTableProps) {
 
   // Get unique keyword types for filter
   const keywordTypes = useMemo(() => {
-    const types = new Set(data.data.map(item => item.keywordType).filter(Boolean));
+    const types = new Set(
+      data.data.map((item) => item.keywordType).filter(Boolean)
+    );
     return Array.from(types);
   }, [data.data]);
 
   // Filter and sort data
   const filteredAndSortedData = useMemo(() => {
-    let filtered = data.data.filter(item => {
-      const matchesSearch = item.keyword.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.searchCommand.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = keywordTypeFilter === 'all' || item.keywordType === keywordTypeFilter;
+    let filtered = data.data.filter((item) => {
+      const matchesSearch =
+        item.keyword.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.searchCommand.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesType =
+        keywordTypeFilter === 'all' || item.keywordType === keywordTypeFilter;
 
       return matchesSearch && matchesType;
     });
@@ -57,10 +61,27 @@ export function DataTable({ data }: DataTableProps) {
       const aValue = a[sortField];
       const bValue = b[sortField];
 
+      // Handle numeric fields
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
       }
 
+      // Handle percentage strings (like clickRate)
+      if (
+        sortField === 'clickRate' ||
+        sortField === 'conversionRate' ||
+        sortField === 'directConversionRate' ||
+        sortField === 'roas' ||
+        sortField === 'directRoas' ||
+        sortField === 'acos' ||
+        sortField === 'directAcos'
+      ) {
+        const aNum = parseFloat(String(aValue).replace('%', '')) || 0;
+        const bNum = parseFloat(String(bValue).replace('%', '')) || 0;
+        return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
+      }
+
+      // Handle string fields
       const aStr = String(aValue).toLowerCase();
       const bStr = String(bValue).toLowerCase();
 
@@ -77,7 +98,10 @@ export function DataTable({ data }: DataTableProps) {
   // Pagination
   const totalPages = Math.ceil(filteredAndSortedData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = filteredAndSortedData.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedData = filteredAndSortedData.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -101,25 +125,36 @@ export function DataTable({ data }: DataTableProps) {
 
   const exportToCSV = () => {
     const headers = [
-      'Order', 'Keyword', 'Type', 'Search Command', 'Views', 'Clicks',
-      'Click Rate', 'Conversions', 'Cost', 'GMV', 'Avg Rank'
+      'Order',
+      'Keyword',
+      'Type',
+      'Search Command',
+      'Views',
+      'Clicks',
+      'Click Rate',
+      'Conversions',
+      'Cost',
+      'GMV',
+      'Avg Rank',
     ];
 
     const csvContent = [
       headers.join(','),
-      ...filteredAndSortedData.map(row => [
-        row.order,
-        `"${row.keyword}"`,
-        `"${row.keywordType}"`,
-        `"${row.searchCommand}"`,
-        row.views,
-        row.clicks,
-        row.clickRate,
-        row.conversions,
-        row.cost,
-        row.gmv,
-        row.averageRank
-      ].join(','))
+      ...filteredAndSortedData.map((row) =>
+        [
+          row.order,
+          `"${row.keyword}"`,
+          `"${row.keywordType}"`,
+          `"${row.searchCommand}"`,
+          row.views,
+          row.clicks,
+          row.clickRate,
+          row.conversions,
+          row.cost,
+          row.gmv,
+          row.averageRank,
+        ].join(',')
+      ),
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -161,14 +196,19 @@ export function DataTable({ data }: DataTableProps) {
           </div>
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <Select value={keywordTypeFilter} onValueChange={setKeywordTypeFilter}>
+            <Select
+              value={keywordTypeFilter}
+              onValueChange={setKeywordTypeFilter}
+            >
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
-                {keywordTypes.map(type => (
-                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                {keywordTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -200,13 +240,21 @@ export function DataTable({ data }: DataTableProps) {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-16">
-                  <Button variant="ghost" onClick={() => handleSort('order')} className="h-8 p-0">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort('order')}
+                    className="h-8 p-0"
+                  >
                     #
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
                 <TableHead className="min-w-48">
-                  <Button variant="ghost" onClick={() => handleSort('keyword')} className="h-8 p-0">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort('keyword')}
+                    className="h-8 p-0"
+                  >
                     Keyword
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
@@ -214,37 +262,75 @@ export function DataTable({ data }: DataTableProps) {
                 <TableHead>Type</TableHead>
                 <TableHead className="min-w-32">Search Command</TableHead>
                 <TableHead className="text-right">
-                  <Button variant="ghost" onClick={() => handleSort('views')} className="h-8 p-0">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort('views')}
+                    className="h-8 p-0"
+                  >
                     Views
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
                 <TableHead className="text-right">
-                  <Button variant="ghost" onClick={() => handleSort('clicks')} className="h-8 p-0">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort('clicks')}
+                    className="h-8 p-0"
+                  >
                     Clicks
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-right">Click Rate</TableHead>
                 <TableHead className="text-right">
-                  <Button variant="ghost" onClick={() => handleSort('conversions')} className="h-8 p-0">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort('clickRate')}
+                    className="h-8 p-0"
+                  >
+                    Click Rate
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
+                <TableHead className="text-right">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort('conversions')}
+                    className="h-8 p-0"
+                  >
                     Conv.
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
                 <TableHead className="text-right">
-                  <Button variant="ghost" onClick={() => handleSort('cost')} className="h-8 p-0">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort('cost')}
+                    className="h-8 p-0"
+                  >
                     Cost
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
                 <TableHead className="text-right">
-                  <Button variant="ghost" onClick={() => handleSort('gmv')} className="h-8 p-0">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort('gmv')}
+                    className="h-8 p-0"
+                  >
                     GMV
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-right">Rank</TableHead>
+                <TableHead className="text-right">
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort('averageRank')}
+                    className="h-8 p-0"
+                  >
+                    Rank
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -266,17 +352,25 @@ export function DataTable({ data }: DataTableProps) {
                       {item.searchCommand}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">{formatNumber(item.views)}</TableCell>
-                  <TableCell className="text-right">{formatNumber(item.clicks)}</TableCell>
+                  <TableCell className="text-right">
+                    {formatNumber(item.views)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {formatNumber(item.clicks)}
+                  </TableCell>
                   <TableCell className="text-right">{item.clickRate}</TableCell>
-                  <TableCell className="text-right">{formatNumber(item.conversions)}</TableCell>
+                  <TableCell className="text-right">
+                    {formatNumber(item.conversions)}
+                  </TableCell>
                   <TableCell className="text-right">
                     {item.cost > 0 ? formatCurrency(item.cost) : '-'}
                   </TableCell>
                   <TableCell className="text-right">
                     {item.gmv > 0 ? formatCurrency(item.gmv) : '-'}
                   </TableCell>
-                  <TableCell className="text-right">{item.averageRank || '-'}</TableCell>
+                  <TableCell className="text-right">
+                    {item.averageRank || '-'}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -287,25 +381,32 @@ export function DataTable({ data }: DataTableProps) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
-              Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredAndSortedData.length)} of{' '}
-              {filteredAndSortedData.length} entries
+              Showing {startIndex + 1} to{' '}
+              {Math.min(
+                startIndex + itemsPerPage,
+                filteredAndSortedData.length
+              )}{' '}
+              of {filteredAndSortedData.length} entries
             </div>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(current => Math.max(1, current - 1))}
+                onClick={() =>
+                  setCurrentPage((current) => Math.max(1, current - 1))
+                }
                 disabled={currentPage === 1}
               >
                 Previous
               </Button>
               <div className="flex items-center gap-1">
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const pageNum = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                  const pageNum =
+                    Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
                   return (
                     <Button
                       key={pageNum}
-                      variant={currentPage === pageNum ? "default" : "outline"}
+                      variant={currentPage === pageNum ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setCurrentPage(pageNum)}
                       className="w-8 h-8 p-0"
@@ -318,7 +419,9 @@ export function DataTable({ data }: DataTableProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(current => Math.min(totalPages, current + 1))}
+                onClick={() =>
+                  setCurrentPage((current) => Math.min(totalPages, current + 1))
+                }
                 disabled={currentPage === totalPages}
               >
                 Next
