@@ -202,6 +202,42 @@ STT,Từ khóa,Loại từ khóa,Lệnh tìm kiếm,Phương thức đấu giá,
 - Efficient filtering and searching
 - Responsive chart rendering
 
+## 🚀 Deployment
+
+### **Netlify Deployment**
+
+This project is configured for easy deployment on Netlify:
+
+1. **Connect your repository** to Netlify
+2. **Build settings** are automatically configured via `netlify.toml`:
+   - Build command: `bun run build`
+   - Publish directory: `build/client`
+3. **Deploy** - Netlify will automatically build and deploy your site
+
+The included configuration files handle:
+
+- **SPA Routing**: `_redirects` file ensures React Router works correctly
+- **Build Optimization**: Proper cache headers for static assets
+- **Environment**: Node.js 18+ for build process
+
+### **Manual Deployment Steps**
+
+1. **Build the project locally**:
+
+   ```bash
+   bun run build
+   ```
+
+2. **Deploy the `build/client` folder** to your hosting service
+
+3. **Configure redirects** - Ensure your hosting service redirects all routes to `index.html` for SPA functionality
+
+### **Other Hosting Platforms**
+
+- **Vercel**: Works out of the box with React Router v7
+- **Cloudflare Pages**: Use the `_redirects` file configuration
+- **GitHub Pages**: Requires additional configuration for SPA routing
+
 ## 🔧 Customization
 
 ### **Adding New Chart Types**
